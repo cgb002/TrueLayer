@@ -3,12 +3,16 @@
 #
 #CGB	Thu  3 Dec 10:33:55 GMT 2020
 #
+#	Version: 1.0
+#
 #	Truelayer technical test
 
 # Objective:
 # Create Truelayer dir
 # Create file
-# Add timestamp to file
+# Add timestamp et al to file
+
+set -x
 
 #CGB	Succint 1 line solution
 
@@ -26,7 +30,7 @@ CMDNAME=$0
 
 display_usage()
 {
-echo "Usage:  ${CMDNAME} [options] "
+echo "Usage:  ${CMDNAME} [h|x] directory-name filename"
 echo ""
 echo "Help"
 echo ""
@@ -35,7 +39,8 @@ echo ""
 echo "		directory-name filename"
 echo ""
 echo ""
-echo "    -h                   Display help. Currently not implmented"
+echo "    -h                   Display help"
+echo "    -x                   Display example"
 echo ""
 	return 0
 }
@@ -49,12 +54,16 @@ display_help()
 	echo ""
 	echo "Second argument shold be the filename to be created."
 	echo ""
+	echo "If no arguments are supplied then the defaults will be used."
+	echo ""
 }
 
 
 default_settings()
 {
-	echo "$0 : No arguments provided so using default settings of ..."
+	echo "$0 directory-name filename"
+	echo ""
+	echo "No arguments provided so using default settings of ..."
 	echo ""
 	echo "Directory to be set : TrueLayer"
 	echo "Filename to be set : TLTest.txt"
@@ -62,10 +71,24 @@ default_settings()
 	FILE="TLTest.txt"
 }
 
-action()
+old_update_file()
 {
 [ -d ${DIR} ] || mkdir ${DIR} && touch ${DIR}/${FILE} && echo "`date`" > ${DIR}/${FILE} 
 [ -d ${DIR} ] && echo "Directory already exists"
+}
+
+actions()
+{
+	DT=`date`
+	NM=`echo "$0"`
+	DIR=`ls -ab "$PWD"| tr '\n' ' '`
+	IP=`curl -s checkip.amazonaws.com`
+	MEM=`grep MemTotal /proc/meminfo| tr -s " " | cut -d " " -f 2`
+	MB=`expr ${MEM} / 1000`
+	PID="$$"
+	ID=`id -un`
+	echo "${DT}|${NM}|${DIR}|${IP}|${MB}|${PID}|${ID}"
+	echo "#COMMENT : CGB"
 }
 
 ##########################################################################
@@ -73,18 +96,23 @@ action()
 #
 #	Interactive options
 
-# if less than two arguments supplied, display usage 
+
+[ -d ${DIR} ] || mkdir ${DIR} && touch ${DIR}/${FILE}
+
+OUTPUT=${DIR}/${FILE} 
+
 case 	"$#" in
 	0)	default_settings
-		action
+		actions >> ${OUTPUT}
 		;;
 	1)	display_usage
 		[ "$1" == "-h" ] && display_help
+		[ "$1" == "-x" ] && default_settings
 		exit 1
 		;;
 	2)	DIR=$1
 		FILE=$2	
-		action
+		actions >> ${OUTPUT}
 		;;
 	*)	display_usage
 		exit 2
@@ -98,6 +126,7 @@ exit 256
 
 ################################################################################
 
+set +x
 
 ################################################################################
 #EOF
