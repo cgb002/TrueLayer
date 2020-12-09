@@ -1,0 +1,4 @@
+The 2 main 'families' of Linux are :
+Fedora/RedHat (RPM based)
+Debian (dpkg based)
+

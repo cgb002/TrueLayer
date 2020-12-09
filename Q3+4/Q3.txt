@@ -1,0 +1,5 @@
+CAT EOF
+is known in UNIX & Linux as a "Here" Doc.
+
+It refers to the cat command (concatenate) and the End-of-file marker indicating that the following text should be used as a stream until the stated terminator.
+
